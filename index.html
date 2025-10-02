@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Interactive Form Validation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    input {
+      display: block;
+      margin: 8px 0;
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    button:hover:enabled {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+    }
+
+    .strength {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .weak { color: red; }
+    .medium { color: orange; }
+    .strong { color: green; }
+
+    .success {
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration Form</h2>
+    <form id="myForm">
+      <label>Name:</label>
+      <input type="text" id="name" required>
+      <span id="nameError" class="error"></span>
+
+      <label>Email:</label>
+      <input type="email" id="email" required>
+      <span id="emailError" class="error"></span>
+
+      <label>Phone Number:</label>
+      <input type="text" id="phone" required>
+      <span id="phoneError" class="error"></span>
+
+      <label>Password:</label>
+      <input type="password" id="password" required>
+      <span id="passwordError" class="error"></span>
+      <div id="strengthMsg" class="strength"></div>
+
+      <button type="submit" id="submitBtn" disabled>Submit</button>
+    </form>
+    <p id="formMsg"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById("myForm");
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
+    const phoneField = document.getElementById("phone");
+    const passwordField = document.getElementById("password");
+    const submitBtn = document.getElementById("submitBtn");
+
+    const nameError = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const phoneError = document.getElementById("phoneError");
+    const passwordError = document.getElementById("passwordError");
+    const strengthMsg = document.getElementById("strengthMsg");
+    const formMsg = document.getElementById("formMsg");
+
+    // Fake database of existing emails
+    const existingEmails = ["test@example.com", "user@gmail.com", "hello@yahoo.com"];
+
+    // Utility to check password strength
+    function checkPasswordStrength(password) {
+      let strength = 0;
+      if (password.length >= 6) strength++;
+      if (/[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+      if (strength <= 1) return "Too Weak";
+      if (strength === 2) return "Medium";
+      if (strength >= 3) return "Strong";
+    }
+
+    // Validation function
+    function validateForm() {
+      let valid = true;
+
+      // Name
+      if (nameField.value.trim() === "") {
+        nameError.textContent = "Name is required";
+        valid = false;
+      } else {
+        nameError.textContent = "";
+      }
+
+      // Email
+      const emailValue = emailField.value.trim();
+      if (!emailValue.includes("@") || !emailValue.includes(".")) {
+        emailError.textContent = "Invalid email format";
+        valid = false;
+      } else if (existingEmails.includes(emailValue.toLowerCase())) {
+        emailError.textContent = "Email already exists";
+        valid = false;
+      } else {
+        emailError.textContent = "";
+      }
+
+      // Phone
+      const phoneValue = phoneField.value.trim();
+      if (!/^\d{10}$/.test(phoneValue)) {
+        phoneError.textContent = "Phone must be exactly 10 digits";
+        valid = false;
+      } else {
+        phoneError.textContent = "";
+      }
+
+      // Password
+      const passwordValue = passwordField.value;
+      if (passwordValue.length === 0) {
+        passwordError.textContent = "Password is required";
+        strengthMsg.textContent = "";
+        valid = false;
+      } else {
+        passwordError.textContent = "";
+        const strength = checkPasswordStrength(passwordValue);
+        strengthMsg.textContent = "Strength: " + strength;
+        strengthMsg.className = "strength " + strength.toLowerCase().replace(" ", "");
+        if (strength === "Too Weak") valid = false;
+      }
+
+      // Enable or disable submit button
+      submitBtn.disabled = !valid;
+      return valid;
+    }
+
+    // Add event listeners
+    emailField.addEventListener("input", validateForm);
+    nameField.addEventListener("input", validateForm);
+    phoneField.addEventListener("input", validateForm);
+    passwordField.addEventListener("input", validateForm);
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (validateForm()) {
+        formMsg.textContent = "Form submitted successfully!";
+        formMsg.className = "success";
+      }
+    });
+  </script>
+</body>
+</html>

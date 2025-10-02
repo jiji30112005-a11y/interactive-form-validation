@@ -25,3 +25,13 @@ It checks:
 
 
 No extra setup is required since this project runs purely on the browser.
+
+
+
+## 🔗 Project Links
+
+- **Repository**: [GitHub Repo]( jiji30112005-a11y/interactive-form-validation)
+- **Live Demo**: [Deployed Site](  https://jiji30112005-a11y.github.io/interactive-form-validation/)
+
+
+
